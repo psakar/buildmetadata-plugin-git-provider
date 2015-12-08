@@ -19,14 +19,12 @@ package org.ncl.maven.plugin.buildmetadata.data;
 import de.smartics.maven.plugin.buildmetadata.common.RevisionHelper;
 import de.smartics.maven.plugin.buildmetadata.common.ScmControl;
 import de.smartics.maven.plugin.buildmetadata.common.ScmCredentials;
-import de.smartics.maven.plugin.buildmetadata.common.ScmInfo;
 import de.smartics.maven.plugin.buildmetadata.data.AbstractMetaDataProvider;
 import de.smartics.maven.plugin.buildmetadata.scm.maven.ScmAccessInfo;
 import de.smartics.maven.plugin.buildmetadata.scm.maven.ScmConnectionInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.scm.manager.NoSuchScmProviderException;
 import org.apache.maven.scm.provider.ScmProviderRepositoryWithHost;
 import org.apache.maven.scm.repository.ScmRepository;
@@ -46,20 +44,24 @@ public class GitScmMetadataProvider extends AbstractMetaDataProvider
 {
     private static final Log LOG = LogFactory.getLog(GitScmMetadataProvider.class);
     private final ScmConnectionLookup scmConnectionLookup;
-    //FIXME
-    private final boolean removeDomainFromScmConnectionHostname = true;
 
-    public GitScmMetadataProvider(MavenProject project, ScmInfo scmInfo) {
-        this(project, scmInfo, new GitScmConnectionLookup());
+
+    private boolean readLocalGitRepositoryInfo = false;
+
+    private boolean removeDomainFromScmConnectionHostname = false;
+
+    public GitScmMetadataProvider() {
+        this(new GitScmConnectionLookup());
     }
 
-    GitScmMetadataProvider(MavenProject project, ScmInfo scmInfo, ScmConnectionLookup connectionLookup) {
+    GitScmMetadataProvider(ScmConnectionLookup connectionLookup) {
         this.scmConnectionLookup = connectionLookup;
-        this.project = project;
-        this.scmInfo = scmInfo;
     }
 
     public void provideBuildMetaData(Properties buildMetaDataProperties) throws MojoExecutionException {
+        if (!readLocalGitRepositoryInfo) {
+            return;
+        }
         ScmControl scmControl = this.scmInfo.getScmControl();
         if(scmControl.isAddScmInfo() && !scmControl.isOffline() && this.project.getScm() != null) {
             try {

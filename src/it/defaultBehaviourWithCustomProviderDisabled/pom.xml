@@ -13,18 +13,31 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <scm>
+    <connection>scm:git:http://127.0.0.1/my-project</connection>
+    <developerConnection>scm:git:http://127.0.0.1/my-project</developerConnection>
+    <url>http://127.0.0.1/my-project</url>
+  </scm>
+
   <build>
     <plugins>
       <plugin>
-        <groupId>@project.groupId@</groupId>
-        <artifactId>@project.artifactId@</artifactId>
-        <version>@project.version@</version>
+        <groupId>de.smartics.maven.plugin</groupId>
+        <artifactId>buildmetadata-maven-plugin</artifactId>
+        <version>1.6.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>@project.groupId@</groupId>
+            <artifactId>@project.artifactId@</artifactId>
+            <version>@project.version@</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
-            <id>touch</id>
-            <phase>validate</phase>
+            <id>provide-buildmetadata</id>
+            <phase>initialize</phase>
             <goals>
-              <goal>touch</goal>
+              <goal>provide-buildmetadata</goal>
             </goals>
           </execution>
         </executions>
